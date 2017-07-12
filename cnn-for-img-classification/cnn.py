@@ -111,10 +111,10 @@ with tf.Session() as sess:
     coord = tf.train.Coordinator() 
     threads = tf.train.start_queue_runners(sess=sess, coord=coord)
     batch_x, batch_y = sess.run([img_batch, label_batch])
-    batch_y = np.array([labels_onehot_dict[x.decode()] for x in batch_y], dtype=int)
+    batch_y = np.array([labels_onehot_dict[l.decode()] for l in batch_y], dtype=int)
 
     batch_x_test, batch_y_test = sess.run([img_batch_test, label_batch_test])
-    batch_y_test = np.array([labels_onehot_dict[x.decode()] for x in batch_y_test], dtype=int)
+    batch_y_test = np.array([labels_onehot_dict[l.decode()] for l in batch_y_test], dtype=int)
     print(batch_y.shape)
     for i in range(a.training_iters):
         sess.run(optimizer, feed_dict={x: batch_x, y: batch_y, keep_prob: a.dropout})
