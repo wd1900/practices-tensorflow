@@ -37,7 +37,7 @@ for i, el in enumerate(labels):
 print(labels_onehot_dict)
 
 # tf Graph input
-x = tf.placeholder(tf.float32, [None, a.img_width, a.img_height, 1])
+x = tf.placeholder(tf.float32, [None, a.img_width, a.img_height, 3])
 y = tf.placeholder(tf.float32, [None, a.n_classes])
 keep_prob = tf.placeholder(tf.float32)
 
@@ -57,7 +57,7 @@ def maxpool2d(x, k=2):
 def conv_net(x, weights, biases, dropout):
     conv1 = conv2d(x, weights['wc1'], biases['bc1'])
     conv1 = maxpool2d(conv1, k=2)
-
+    
     conv2 = conv2d(conv1, weights['wc2'], biases['bc2'])
     conv2 = maxpool2d(conv2, k=2)
 
@@ -72,7 +72,7 @@ def conv_net(x, weights, biases, dropout):
 
 weights = {
     # 5x5 conv, 1 input, 32 outputs
-    'wc1': tf.Variable(tf.random_normal([5, 5, 1, 32])),
+    'wc1': tf.Variable(tf.random_normal([5, 5, 3, 32])),
     # 5x5 conv, 32 inputs, 64 outputs
     'wc2': tf.Variable(tf.random_normal([5, 5, 32, 64])),
     # fully connected, 7*7*64 inputs, 1024 outputs
@@ -115,7 +115,7 @@ with tf.Session() as sess:
 
     batch_x_test, batch_y_test = sess.run([img_batch_test, label_batch_test])
     batch_y_test = np.array([labels_onehot_dict[l.decode()] for l in batch_y_test], dtype=int)
-    print(batch_y.shape)
+    print(batch_x.shape)
     for i in range(a.training_iters):
         sess.run(optimizer, feed_dict={x: batch_x, y: batch_y, keep_prob: a.dropout})
         if i % a.display_step == 0:

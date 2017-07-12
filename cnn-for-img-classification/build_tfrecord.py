@@ -31,7 +31,7 @@ for name in os.listdir(a.input_dir):
     for img_name in os.listdir(class_path):
         img_path = class_path + img_name
         img = Image.open(img_path)
-        img = img.convert('L')
+        # img = img.convert('L')
         img = img.resize((a.img_width, a.img_height))
         for i in [Image.FLIP_LEFT_RIGHT, Image.FLIP_TOP_BOTTOM, Image.ROTATE_90,Image.ROTATE_180,Image.ROTATE_270, 'none']:
         # for i in ['none']:
