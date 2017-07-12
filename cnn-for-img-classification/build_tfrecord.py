@@ -33,8 +33,8 @@ for name in os.listdir(a.input_dir):
         img = Image.open(img_path)
         img = img.convert('L')
         img = img.resize((a.img_width, a.img_height))
-        # for i in [Image.FLIP_LEFT_RIGHT, Image.FLIP_TOP_BOTTOM, Image.ROTATE_90,Image.ROTATE_180,Image.ROTATE_270, 'none']:
-        for i in ['none']:
+        for i in [Image.FLIP_LEFT_RIGHT, Image.FLIP_TOP_BOTTOM, Image.ROTATE_90,Image.ROTATE_180,Image.ROTATE_270, 'none']:
+        # for i in ['none']:
             img_tran = img
             if i != 'none':
                 img_tran = img_tran.transpose(i)
