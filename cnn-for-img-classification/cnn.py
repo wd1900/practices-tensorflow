@@ -30,10 +30,11 @@ fc_layer_h = math.ceil(math.ceil(a.img_height/2)/2)
 
 # Find every directory name in the orginal images  directory (dance,nodance ...)
 labels = list(map(lambda c: c.split("/")[-1], glob.glob(a.origin_dir + "/*")))
-# Match every label from label_batch and return the index where they exist in the list of classes
-# train_labels = tf.map_fn(lambda l: tf.where(tf.equal(labels, l))[0,0:1][0], label_batch, dtype=tf.int64)
 labels_onehot = np.eye(a.n_classes, dtype=int)
-print(labels_onehot)
+labels_onehot_dict = {}
+for i, el in enumerate(labels):
+    labels_onehot_dict[el] = labels_onehot[i]
+print(labels_onehot_dict)
 
 # tf Graph input
 x = tf.placeholder(tf.float32, [None, a.img_width, a.img_height, 1])
@@ -110,12 +111,10 @@ with tf.Session() as sess:
     coord = tf.train.Coordinator() 
     threads = tf.train.start_queue_runners(sess=sess, coord=coord)
     batch_x, batch_y = sess.run([img_batch, label_batch])
-    batch_y = tf.map_fn(lambda l: tf.where(tf.equal(labels, l))[0, 0:1][0], batch_y, dtype=tf.int64)
-    batch_y = np.array([labels_onehot[x] for x in batch_y.eval()], dtype=int)
+    batch_y = np.array([labels_onehot_dict[x.decode()] for x in batch_y], dtype=int)
 
     batch_x_test, batch_y_test = sess.run([img_batch_test, label_batch_test])
-    batch_y_test = tf.map_fn(lambda l: tf.where(tf.equal(labels, l))[0, 0:1][0], batch_y_test, dtype=tf.int64)
-    batch_y_test = np.array([labels_onehot[x] for x in batch_y_test.eval()], dtype=int)
+    batch_y_test = np.array([labels_onehot_dict[x.decode()] for x in batch_y_test], dtype=int)
     print(batch_y.shape)
     for i in range(a.training_iters):
         sess.run(optimizer, feed_dict={x: batch_x, y: batch_y, keep_prob: a.dropout})
