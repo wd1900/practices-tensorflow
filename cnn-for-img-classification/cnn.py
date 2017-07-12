@@ -25,8 +25,8 @@ parser.add_argument("--dropout", type=float, default=0.75,  help="n_classes")
 
 a = parser.parse_args()
 
-fc_layer_w = math.ceil(math.ceil(a.img_width/2)/2)
-fc_layer_h = math.ceil(math.ceil(a.img_height/2)/2)
+fc_layer_w = int(math.ceil(math.ceil(a.img_width/2)/2))
+fc_layer_h = int(math.ceil(math.ceil(a.img_height/2)/2))
 
 # Find every directory name in the orginal images  directory (dance,nodance ...)
 labels = list(map(lambda c: c.split("/")[-1], glob.glob(a.origin_dir + "/*")))
