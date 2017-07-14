@@ -41,8 +41,8 @@ for name in os.listdir(a.input_dir):
                 
             img_raw = img_tran.tobytes()
             example = tf.train.Example(features=tf.train.Features(feature={
-                'label':tf.train.Feature(bytes_list=tf.train.BytesList(value=[name.encode()])),
-                'img_raw':tf.train.Feature(bytes_list=tf.train.BytesList(value=[img_raw]))
+                'label': tf.train.Feature(bytes_list=tf.train.BytesList(value=[name.encode()])),
+                'img_raw': tf.train.Feature(bytes_list=tf.train.BytesList(value=[img_raw]))
             }))
             writer.write(example.SerializeToString())
 writer.close()

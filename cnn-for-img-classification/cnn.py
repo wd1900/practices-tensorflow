@@ -37,7 +37,7 @@ for i, el in enumerate(labels):
 print(labels_onehot_dict)
 
 # tf Graph input
-x = tf.placeholder(tf.float32, [None, a.img_width, a.img_height, 3])
+x = tf.placeholder(tf.float32, [None, a.img_height, a.img_width, 3])
 y = tf.placeholder(tf.float32, [None, a.n_classes])
 keep_prob = tf.placeholder(tf.float32)
 
@@ -98,8 +98,8 @@ optimizer = tf.train.AdamOptimizer(learning_rate=a.learning_rate).minimize(cost)
 correct_pred = tf.equal(tf.argmax(pred, 1), tf.argmax(y, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
 
-img_batch, label_batch = _read_and_decode(a.tfrecord, a.img_width, a.img_height, a.batch_size)
-img_batch_test, label_batch_test = _read_and_decode(a.test_tfrecord, a.img_width, a.img_height, a.batch_size)
+img_batch, label_batch = _read_and_decode(a.tfrecord, a.img_height, a.img_width, a.batch_size)
+img_batch_test, label_batch_test = _read_and_decode(a.test_tfrecord, a.img_height, a.img_width, a.batch_size)
 
 
 # Initializing the variables

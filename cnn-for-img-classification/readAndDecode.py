@@ -2,7 +2,7 @@
 import tensorflow as tf
 
 
-def _read_and_decode(filename, width=120, height=213, batch_size=64):
+def _read_and_decode(filename, height=213, width=120, batch_size=64):
     # 根据文件名生成一个队列
     filename_queue = tf.train.string_input_producer([filename])
 
@@ -15,13 +15,35 @@ def _read_and_decode(filename, width=120, height=213, batch_size=64):
                                        })
 
     img = tf.decode_raw(features['img_raw'], tf.uint8)
-    img = tf.reshape(img, shape=[width, height, 3])
+    img = tf.reshape(img, shape=[height, width, 3])
     img = tf.cast(img, tf.float32) * (1. / 255) - 0.5
     label = tf.cast(features['label'], tf.string)
+    min_after_dequeue = 10000
+    capacity = min_after_dequeue + 3 * batch_size
     img_batch, label_batch = tf.train.shuffle_batch([img, label],
                                                 num_threads=4,
                                                 batch_size=batch_size,
-                                                capacity=50000,
-                                                min_after_dequeue=10000)
+                                                capacity=capacity,
+                                                min_after_dequeue=min_after_dequeue)
 
     return img_batch, label_batch
+
+
+def distorted_img(img_batch, height, width):
+    # Randomly crop a [height, width] section of the image.
+    distorted_image = tf.random_crop(img_batch, [height, width, 3])
+    # Randomly flip the image horizontally.
+    distorted_image = tf.image.random_flip_left_right(distorted_image)
+
+    distorted_image = tf.image.random_brightness(distorted_image,
+                                               max_delta=63)
+    distorted_image = tf.image.random_contrast(distorted_image,
+                                             lower=0.2, upper=1.8)
+    # Subtract off the mean and divide by the variance of the pixels.
+    float_image = tf.image.per_image_standardization(distorted_image)
+
+    # Set the shapes of tensors.
+    float_image.set_shape([height, width, 3])
+
+    return float_image
+
