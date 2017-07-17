@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 import tensorflow as tf
 
-from readAndDecode import _read_and_decode
+from readAndDecodeBatch import _read_and_decode
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--tfrecord", required=True, help="where to get input tfrecords")
+parser.add_argument("--tfrecord_dir", required=True, help="where to get input tfrecords")
 a = parser.parse_args()
 
-img, label = _read_and_decode(a.tfrecord, width=120, height=213)
+img, label = _read_and_decode(a.tfrecord_dir, width=120, height=213)
 
 # 使用shuffle_batch可以随机打乱输入
 # img_batch, label_batch = tf.train.shuffle_batch([img, label],
@@ -23,7 +23,7 @@ with tf.Session() as sess:
     sess.run(init)
     coord = tf.train.Coordinator()
     threads = tf.train.start_queue_runners(sess=sess, coord=coord)
-    for i in range(30):
+    for i in range(3):
         val, l = sess.run([img, label])
         print(val.shape)
         print(l)

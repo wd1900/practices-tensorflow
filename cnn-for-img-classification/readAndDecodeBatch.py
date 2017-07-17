@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import tensorflow as tf
+import os
 
 
 def read_my_file_format(filename_queue, height, width):
@@ -17,15 +18,16 @@ def read_my_file_format(filename_queue, height, width):
     return img, label
 
 
-def _read_and_decode(filename, height=213, width=120, batch_size=64):
+def _read_and_decode(file_dir, height=213, width=120, batch_size=64):
     # 根据文件名生成一个队列
-    filename_queue = tf.train.string_input_producer([filename])
-    print(filename)
-    img, label = read_my_file_format(filename_queue, height, width)
-    min_after_dequeue = 10000
+    filenames = list(map(lambda i: os.path.join(file_dir, i), os.listdir(file_dir)))
+    read_threads = 10
+    filename_queue = tf.train.string_input_producer(filenames, shuffle=True)
+
+    example_list = [read_my_file_format(filename_queue, height, width) for _ in range(read_threads)]
+    min_after_dequeue = 1000
     capacity = min_after_dequeue + 3 * batch_size
-    img_batch, label_batch = tf.train.shuffle_batch([img, label],
-                                                num_threads=4,
+    img_batch, label_batch = tf.train.shuffle_batch_join(example_list,
                                                 batch_size=batch_size,
                                                 capacity=capacity,
                                                 min_after_dequeue=min_after_dequeue)
