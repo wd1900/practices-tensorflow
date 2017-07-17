@@ -22,7 +22,7 @@ def _read_and_decode(filename, height=213, width=120, batch_size=64):
     filename_queue = tf.train.string_input_producer([filename])
     print(filename)
     img, label = read_my_file_format(filename_queue, height, width)
-    min_after_dequeue = 10000
+    min_after_dequeue = 1000
     capacity = min_after_dequeue + 3 * batch_size
     img_batch, label_batch = tf.train.shuffle_batch([img, label],
                                                 num_threads=4,
