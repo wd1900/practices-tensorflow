@@ -1,5 +1,6 @@
 from __future__ import print_function
-from readAndDecode import _read_and_decode
+from readAndDecodeBatch import _read_and_decode
+from readAndDecodeBatch import distorted_img
 
 import tensorflow as tf
 import numpy as np
@@ -110,13 +111,13 @@ with tf.Session() as sess:
     sess.run(tf.local_variables_initializer())
     coord = tf.train.Coordinator() 
     threads = tf.train.start_queue_runners(sess=sess, coord=coord)
-    batch_x, batch_y = sess.run([img_batch, label_batch])
-    batch_y = np.array([labels_onehot_dict[l.decode()] for l in batch_y], dtype=int)
-
-    batch_x_test, batch_y_test = sess.run([img_batch_test, label_batch_test])
-    batch_y_test = np.array([labels_onehot_dict[l.decode()] for l in batch_y_test], dtype=int)
-    print(batch_x.shape)
     for i in range(a.training_iters):
+        batch_x, batch_y = sess.run([img_batch, label_batch])
+        batch_x = np.array([distorted_img(one_x, a.img_height, a.img_width).eval() for one_x in batch_x])
+        batch_y = np.array([labels_onehot_dict[l.decode()] for l in batch_y], dtype=int)
+
+        batch_x_test, batch_y_test = sess.run([img_batch_test, label_batch_test])
+        batch_y_test = np.array([labels_onehot_dict[l.decode()] for l in batch_y_test], dtype=int)
         sess.run(optimizer, feed_dict={x: batch_x, y: batch_y, keep_prob: a.dropout})
         if i % a.display_step == 0:
             acc, loss = sess.run([accuracy, cost], feed_dict={x: batch_x, y: batch_y, keep_prob: 1})
